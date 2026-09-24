@@ -16,24 +16,40 @@ Design notes:
 - The 50–100 word requirement is enforced in code: `trim_to_word_limit()` cuts the story at a sentence boundary, and `generate_story()` retries up to 3 times if the story is shorter than 50 words.
 - The system prompt keeps the stories gentle and not scary, which suits young children.
 
-## Deploy to Streamlit Community Cloud
+## Deploy (following the course "Streamlit Tutorial" slides)
 
-1. **Create a GitHub repo.** Go to github.com → New repository (make it **Public**), then upload `app.py`, `requirements.txt` and this `README.md` to the repo root.
-2. **Sign in to Streamlit.** Go to share.streamlit.io and sign in with GitHub.
-3. **Create the app.** Click **Create app** → **Deploy a public app from GitHub**, then set:
-   - Repository: `<your-username>/<repo-name>`
-   - Branch: `main`
-   - Main file path: `app.py`
-   - Advanced settings → Python version: **3.12**
-4. Click **Deploy**. The first build takes about 5–10 minutes to install the packages. The first story takes another 1–2 minutes because the models download on first use. Stories after that take about 10–30 seconds.
-5. Copy the URL (`https://<something>.streamlit.app`) and submit it.
+### Part A: GitHub
+1. Sign in at https://github.com → click **New** (green button, top left) to create a repository.
+2. Settings: **Repository name** e.g. `ISOM5240-StoryApp`, **Visibility: Public**, **Add README: On**, **License: GNU General Public License v3.0** → **Create repository**.
+3. In the repo, click **Add file → Create new file**:
+   - Filename `requirements.txt` → paste its contents → **Commit changes…** → **Commit changes**.
+4. Again **Add file → Create new file**:
+   - Filename `app.py` → paste the whole `app.py` → **Commit changes…** → **Commit changes**.
+   (Or use **Add file → Upload files** and drag both files in, then commit.)
+5. Optional: open `README.md` in the repo → pencil icon → paste this README → commit.
 
-### Optional: use your Hugging Face token
-All three models are public, so no token is needed. If the logs show Hugging Face rate-limit errors (HTTP 429), open your HF account → Settings → Access Tokens and create a **Read** token. Then, in Streamlit Cloud, go to the app → Settings → Secrets and add:
-```
-HF_TOKEN = "hf_xxxxxxxx"
-```
-Streamlit exposes secrets as environment variables, and `transformers` reads `HF_TOKEN` automatically.
+### Part B: Streamlit Cloud
+1. Go to https://share.streamlit.io → **Continue to sign-in** → **Continue with GitHub** → **Authorize streamlit**.
+2. Click **Create app** (top right) → **Deploy a public app from GitHub**.
+3. Fill in:
+   - **Repository:** `<your-github-name>/ISOM5240-StoryApp`
+   - **Branch:** `main`
+   - **Main file path:** `app.py`  (the slides use `isom5240app.py`, but this assignment asks for `app.py`)
+   - **App URL:** choose one, e.g. `isom5240-story-<yourname>`
+4. Click **Deploy**. The first build installs torch and takes about 5–10 minutes. The first story then takes another 1–2 minutes while the models download.
+5. Your submission link is `https://<your-app-url>.streamlit.app`.
+
+### Part C: Add your Hugging Face token (recommended)
+The models used here are public, so a token isn't strictly required. Adding one avoids Hugging Face download rate limits.
+1. On huggingface.co → Settings → Access Tokens, copy your saved token or create a new one.
+2. On share.streamlit.io, click the **three dots** next to your app → **Settings** → **Secrets**, then paste:
+   ```
+   HF_TOKEN = "hf_your_token_here"
+   ```
+   → **Save changes**. Streamlit passes this to the app as an environment variable, and `transformers` reads `HF_TOKEN` automatically, so `app.py` needs no changes.
+
+### Updating the app later
+Edit `app.py` on GitHub (pencil icon) → **Commit changes**. The Streamlit app updates automatically.
 
 ## Run locally (optional)
 ```bash
@@ -45,7 +61,7 @@ streamlit run app.py
 | Symptom | Fix |
 |---|---|
 | "Oh no, this app has gone over its resource limits" | Change `STORY_MODEL` in `app.py` to `HuggingFaceTB/SmolLM2-360M-Instruct` (a smaller model) and reboot the app. |
-| Build fails while installing torch | Delete the `--extra-index-url` line from `requirements.txt` and redeploy. The build is slower but uses the standard PyPI torch. |
+| App stuck on "Your app is in the oven" for a long time | Normal on the first build (torch is large). Wait about 10 minutes, then use ⋮ → **Reboot**. |
 | No sound on iPhone/iPad | Autoplay is blocked on those devices. Press play on the audio player. |
 
 ## Testing checklist
